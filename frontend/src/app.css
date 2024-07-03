@@ -24,6 +24,10 @@ body {
 
 }
 
+#root {
+    height: 100vh;
+}
+
 .grid-layout {
     display: grid;
     gap: 0;
