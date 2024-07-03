@@ -137,6 +137,8 @@ mutable struct LWCPanel <: AbstractChartSettings
     min_bar_spacing::Real
     min_charts_for_search::Int64
     copyright::Bool
+    tooltip::Bool
+    tooltip_format::String
     charts::Tuple{Vararg{LWCChart}}
 end
 
@@ -169,6 +171,8 @@ Creates a panel combining several [`charts`](@ref charts).
 | `bar_spacing::Real` | `6` | Distance between the stripes in pixels. |
 | `min_bar_spacing::Real` | `0.5` | Minimum distance between the stripes in pixels. |
 | `copyright::Bool` | true | Enables a [TradingView](https://www.tradingview.com/) trademark symbol on the chart. |
+| `tooltip::Bool` | true | Enables tooltip for points. |
+| `tooltip_format::String` | `"\${title}: (\${time}, \${value})"` | String formatting of tooltip text. Display the variables "title", "time" and "value" in the desired format. |
 | `min_charts_for_search` | `10` | Minimum number of charts to search. |
 """
 function lwc_panel(
@@ -186,6 +190,8 @@ function lwc_panel(
     bar_spacing::Real = 6,
     min_bar_spacing::Real = 0.5,
     copyright::Bool = true,
+    tooltip::Bool = true,
+    tooltip_format::String = "\${title}: (\${time}, \${value})",
     min_charts_for_search = 10,
 )
     return LWCPanel(
@@ -203,6 +209,8 @@ function lwc_panel(
         min_bar_spacing,
         min_charts_for_search,
         copyright,
+        tooltip,
+        tooltip_format,
         charts,
     )
 end
