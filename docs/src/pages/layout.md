@@ -108,6 +108,7 @@ layout = lwc_layout(
         x = 1,
         y = 2,
     );
+    min_height = 480,
     name = "Layout example",
 )
 
