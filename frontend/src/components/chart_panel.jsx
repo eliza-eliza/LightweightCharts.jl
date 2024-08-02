@@ -12,7 +12,7 @@ import { DateTimeString, DateString, TimeString, displayDateTimeString } from '.
 import { rescaleAndShiftDates } from '../helpers/rescale.ts';
 import Copyright from './copyright.jsx';
 
-const ChartPanel = ({ settings, id, setPanels }) => {
+const ChartPanel = ({ settings, id, setPanels, syncCrosshair, crosshairPosition, handleCrosshairMove }) => {
     const panelId = `${settings.x}${settings.y}`;
     const ref = useRef(null);
     const tooltip = useRef(null);
@@ -28,12 +28,32 @@ const ChartPanel = ({ settings, id, setPanels }) => {
         createPanel();
     }, []);
 
+    useEffect(() => {
+        if (!crosshairPosition || crosshairPosition.id === id) {
+            return;
+        }
+
+        let isCrossHair = false;
+        if (charts) {
+            for (const value of Object.values(charts)) {
+                if (panel.timeScale().timeToCoordinate(crosshairPosition.time)) {
+                    isCrossHair = true;
+                }
+                panel.setCrosshairPosition(null, crosshairPosition.time, value);
+            }
+        }
+
+        if (!isCrossHair && crosshairPosition.id !== id) {
+            panel.clearCrosshairPosition();
+        }
+    }, [crosshairPosition, syncCrosshair]);
+
     const debounce = (func, delay) => {
         let timeoutId;
-        
+
         return function executedFunction(...args) {
-          clearTimeout(timeoutId);
-          timeoutId = setTimeout(() => func.apply(this, args), delay);
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => func.apply(this, args), delay);
         };
     };
 
@@ -102,6 +122,9 @@ const ChartPanel = ({ settings, id, setPanels }) => {
         });
 
         settings.tooltip && newChart.subscribeCrosshairMove(debounce((param) => {
+            if (!param || !param.point || !param.time) return;
+            syncCrosshair && handleCrosshairMove({ time: param.time, point: param.point, id: id });
+
             const tooltipRef = tooltip.current;
             if (!param || !param.seriesData) {
                 tooltipRef.style.opacity = '0';
@@ -145,17 +168,17 @@ const ChartPanel = ({ settings, id, setPanels }) => {
                     `;
                 }
             });
-            
+
             const chartRect = ref.current.getBoundingClientRect();
             tooltipRef.style.opacity = '0';
             if (tooltipHTML) {
-                tooltipRef.innerHTML  = tooltipHTML;
+                tooltipRef.innerHTML = tooltipHTML;
                 if (chartRect.width - point.x - parseInt(tooltipRef.style.marginLeft) < tooltipRef.offsetWidth) {
                     tooltipRef.style.left = `${chartRect.left + point.x - tooltipRef.offsetWidth - 10}px`;
                 } else {
                     tooltipRef.style.left = `${chartRect.left + point.x}px`;
                 }
-                tooltipRef.style.top  = `${chartRect.top + point.y - 22}px`;
+                tooltipRef.style.top = `${chartRect.top + point.y - 22}px`;
                 tooltipRef.style.opacity = '1';
             };
         }), 200);

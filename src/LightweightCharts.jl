@@ -225,6 +225,7 @@ See also: [`lwc_layout`](@ref).
 mutable struct LWCLayout <: AbstractChartSettings
     name::String
     sync::Bool
+    sync_crosshair::Bool
     min_height::Integer
     panels::Dict{String,LWCPanel}
 end
@@ -262,12 +263,14 @@ Combines multiple `panels` into a common layout.
 |:-----------|:-----------------------|:------------|
 | `name::String` | `"LightweightCharts ❤️ Julia"` | Layout name (will be displayed in the browser tab title). |
 | `sync::Bool` | `true` | Synchronization of chart scrolling. |
+| `sync_crosshair::Bool` | `true` | Synchronization the crosshairs of separate charts. |
 | `min_height::Integer` | `300` | Minimum of layout height in px. |
 """
 function lwc_layout(
     panels::LWCPanel...;
     name::String = "LightweightCharts ❤️ Julia",
     sync::Bool = true,
+    sync_crosshair::Bool = true,
     min_height::Integer = 300,
 )
     update_not_set_coords!(panels)
@@ -302,7 +305,7 @@ function lwc_layout(
         end
     end
 
-    return LWCLayout(name, sync, min_height, grids)
+    return LWCLayout(name, sync, sync_crosshair, min_height, grids)
 end
 
 function Base.string(chart::LWCChart)
