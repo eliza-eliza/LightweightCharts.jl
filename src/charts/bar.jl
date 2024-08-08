@@ -34,7 +34,7 @@ Wrapper function for [`Bar`](https://tradingview.github.io/lightweight-charts/do
 | `plugins::Vector{LWCPlugin}` | `LWCPlugin[]` | Additional plugins.  |
 """
 function lwc_bar(
-    data::AbstractVector{LWCCandleChartItem};
+    data::TimeArray{Int64,LWCCandleChartItem};
     price_scale_id::LWC_PRICE_SCALE_ID = LWC_LEFT,
     label_name::String = "",
     visible::Bool = true,

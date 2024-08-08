@@ -17,6 +17,7 @@ export to_lwc_data,
 using Dates
 using Serde
 using NanoDates
+using TimeArrays
 
 using ..LightweightCharts
 
@@ -46,7 +47,6 @@ Supported for [`lwc_line`](@ref), [`lwc_area`](@ref), [`lwc_baseline`](@ref) and
 | `color::String` | `nothing` | Color. |
 """
 mutable struct LWCSimpleChartItem <: AbstractChartItem
-    time::Int64
     value::Float64
     line_color::Union{String,Nothing}
     top_color::Union{String,Nothing}
@@ -60,7 +60,6 @@ mutable struct LWCSimpleChartItem <: AbstractChartItem
     color::Union{String,Nothing}
 
     function LWCSimpleChartItem(
-        time::Int64,
         value::Real;
         line_color::Union{String,Nothing} = nothing,
         top_color::Union{String,Nothing} = nothing,
@@ -74,7 +73,6 @@ mutable struct LWCSimpleChartItem <: AbstractChartItem
         color::Union{String,Nothing} = nothing,
     )
         return new(
-            time,
             value,
             line_color,
             top_color,
@@ -88,21 +86,8 @@ mutable struct LWCSimpleChartItem <: AbstractChartItem
             color,
         )
     end
-
-    function LWCSimpleChartItem(
-        time::TimeType,
-        value::Real;
-        kw...
-    )
-        return LWCSimpleChartItem(
-            datetime2epochns(time),
-            value;
-            kw...
-        )
-    end
 end
 
-lwc_time(x::LWCSimpleChartItem) = x.time
 lwc_value(x::LWCSimpleChartItem) = x.value
 lwc_line_color(x::LWCSimpleChartItem) = x.line_color
 lwc_top_color(x::LWCSimpleChartItem) = x.top_color
@@ -118,9 +103,36 @@ lwc_color(x::LWCSimpleChartItem) = x.color
 Serde.SerJson.ser_value(::Type{<:AbstractChartItem}, ::Val{:time}, x::Int64) = string(x)
 
 function Base.:(==)(left::LWCSimpleChartItem, right::LWCSimpleChartItem)
-    return isequal(lwc_time(left), lwc_time(right)) &&
-           isequal(lwc_value(left), lwc_value(right))
+    return isequal(lwc_value(left), lwc_value(right))
 end
+
+function Base.zero(::Type{LWCSimpleChartItem})
+    return LWCSimpleChartItem(0)
+end
+
+function Base.:(*)(left::Real, right::LWCSimpleChartItem)
+    return left * right.value
+end
+
+function Base.:(+)(left::Real, right::LWCSimpleChartItem)
+    return LWCSimpleChartItem(
+        left + right.value;
+        right.line_color,
+        right.top_color,
+        right.bottom_color,
+        right.top_fill_color_1,
+        right.top_fill_color_2,
+        right.top_line_color,
+        right.bottom_fill_color_1,
+        right.bottom_fill_color_2,
+        right.bottom_line_color,
+        right.color,
+    )
+end
+
+Base.isnan(x::LWCSimpleChartItem) = isnan(x.value)
+
+TimeArrays.ta_nan(::Type{LWCSimpleChartItem}) = LWCSimpleChartItem(NaN)
 
 """
     LWCCandleChartItem(time::Int64, open::Real, high::Real, low::Real, close::Real; kw...)
@@ -143,7 +155,6 @@ Representation of candlestick data for [`lwc_candlestick`](@ref) and [`lwc_bar`]
 | `wick_color::String` | `nothing` | Wick color. |
 """
 mutable struct LWCCandleChartItem <: AbstractChartItem
-    time::Int64
     open::Float64
     high::Float64
     low::Float64
@@ -153,7 +164,6 @@ mutable struct LWCCandleChartItem <: AbstractChartItem
     wick_color::Union{String,Nothing}
 
     function LWCCandleChartItem(
-        time::Int64,
         open::Real,
         high::Real,
         low::Real,
@@ -163,7 +173,6 @@ mutable struct LWCCandleChartItem <: AbstractChartItem
         wick_color::Union{String,Nothing} = nothing,
     )
         return new(
-            time,
             open,
             high,
             low,
@@ -173,27 +182,8 @@ mutable struct LWCCandleChartItem <: AbstractChartItem
             wick_color,
         )
     end
-
-    function LWCCandleChartItem(
-        time::TimeType,
-        open::Real,
-        high::Real,
-        low::Real,
-        close::Real;
-        kw...
-    )
-        return LWCCandleChartItem(
-            datetime2epochns(time),
-            open,
-            high,
-            low,
-            close;
-            kw...
-        )
-    end
 end
 
-lwc_time(x::LWCCandleChartItem) = x.time
 lwc_open(x::LWCCandleChartItem) = x.open
 lwc_high(x::LWCCandleChartItem) = x.high
 lwc_low(x::LWCCandleChartItem) = x.low
@@ -204,13 +194,36 @@ lwc_wick_color(x::LWCCandleChartItem) = x.wick_color
 
 function Base.:(==)(left::LWCCandleChartItem, right::LWCCandleChartItem)
     return (
-        isequal(lwc_time(left), lwc_time(right)) &&
         isequal(lwc_open(left), lwc_open(right)) &&
         isequal(lwc_high(left), lwc_high(right)) &&
         isequal(lwc_low(left), lwc_low(right))   &&
         isequal(lwc_close(left), lwc_close(right))
     )
 end
+
+function Base.zero(::Type{LWCCandleChartItem})
+    return LWCCandleChartItem(0, 0, 0, 0)
+end
+
+function Base.:(*)(left::Real, right::LWCCandleChartItem)
+    return left * right.close
+end
+
+function Base.:(+)(left::Real, right::LWCCandleChartItem)
+    return LWCCandleChartItem(
+        left + right.open, 
+        left + right.high, 
+        left + right.low, 
+        left + right.close;
+        right.color,
+        right.border_color,
+        right.wick_color,
+    )
+end
+
+Base.isnan(x::LWCCandleChartItem) = isnan(x.open) && isnan(x.high) && isnan(x.low) && isnan(x.close)
+
+TimeArrays.ta_nan(::Type{LWCCandleChartItem}) = LWCCandleChartItem(NaN, NaN, NaN, NaN)
 
 const UNIXEPOCH_NS = Dates.UNIXEPOCH * Int128(1_000_000)
 
@@ -219,13 +232,12 @@ datetime2epochns(x::Date)::Int64     = datetime2epochns(DateTime(x))
 datetime2epochns(x::NanoDate)::Int64 = Dates.value(x) - UNIXEPOCH_NS
 datetime2epochns(x::Real)::Int64     = x * 1_000_000_000
 
-struct LWCChartData{T<:AbstractChartItem} <: AbstractVector{T}
-    data::Vector{T}
+mutable struct LWCChartData{T<:AbstractChartItem} <: AbstractVector{T}
+    data::TimeArray{Int64,T}
 
-    function LWCChartData(data::AbstractVector{T}) where {T<:AbstractChartItem}
-        unique!(lwc_time, data)
-        sort!(data; by = lwc_time)
-        return new{T}(data)
+    function LWCChartData(data::TimeArray{Int64,T}) where {T<:AbstractChartItem}
+        i = unique(i -> ta_timestamp(data[i]), eachindex(data))
+        return new{T}(data[i])
     end
 end
 
@@ -234,13 +246,13 @@ Base.length(x::LWCChartData) = length(x.data)
 Base.getindex(x::LWCChartData, i::Integer) = getindex(x.data, i)
 Base.convert(::Type{LWCChartData}, x::LWCChartData) = x
 
-function Base.convert(::Type{LWCChartData}, x::AbstractVector{<:AbstractChartItem})
+function Base.convert(::Type{LWCChartData}, x::TimeArray{Int64,<:AbstractChartItem})
     return LWCChartData(x)
 end
 
 #__ ChartItem
 
-Base.convert(::Type{<:AbstractChartItem}, x::AbstractChartItem) = x
+Base.convert(::Type{<:AbstractChartItem}, x::TimeTick{Int64,AbstractChartItem}) = x
 
 function Base.convert(::Type{<:AbstractChartItem}, x::Tuple)
     return throw(ErrorException("Incorrect conversion from custom type object to Tuple."))
@@ -252,7 +264,7 @@ end
 
 function Base.convert(::Type{LWCSimpleChartItem}, x::Tuple{<:Union{Real,TimeType},<:Real})
     timestamp, value = x
-    return LWCSimpleChartItem(timestamp, value)
+    return TimeTick(datetime2epochns(timestamp), LWCSimpleChartItem(value))
 end
 
 function Base.convert(
@@ -260,11 +272,11 @@ function Base.convert(
     x::Tuple{D,O,H,L,C},
 ) where {D<:Union{Real,TimeType},O<:Real,H<:Real,L<:Real,C<:Real}
     timestamp, open, high, low, close = x
-    return LWCCandleChartItem(timestamp, open, high, low, close)
+    return TimeTick(datetime2epochns(timestamp), LWCCandleChartItem(open, high, low, close))
 end
 
 function to_lwc_data(::Type{T}, data::AbstractVector) where {T<:AbstractChartItem}
-    return map(item -> convert(T, item), data)
+    return TimeArray(map(item -> convert(T, item), data))
 end
 
 function to_lwc_data(
@@ -274,16 +286,16 @@ function to_lwc_data(
 )
     @assert length(timestamps) === length(values) "length(timestamps) ≠ length(values)"
 
-    return map(timestamps, values) do timestamp, value
-        return LWCSimpleChartItem(timestamp, value)
-    end
+    return TimeArray(map(timestamps, values) do timestamp, value
+        return TimeTick(datetime2epochns(timestamp), LWCSimpleChartItem(value))
+    end)
 end
 
 function to_lwc_data(::Type{LWCSimpleChartItem}, values::AbstractVector{<:Real})
-    return map(enumerate(values)) do item
+    return TimeArray(map(enumerate(values)) do item
         i, value = item
-        return LWCSimpleChartItem(DateTime(1970) + Second(i), value)
-    end
+        return TimeTick(datetime2epochns(DateTime(1970) + Second(i)), LWCSimpleChartItem(value))
+    end)
 end
 
 function to_lwc_data(
@@ -299,9 +311,9 @@ function to_lwc_data(
     @assert length(timestamps) === length(low) "length(timestamps) ≠ length(low)"
     @assert length(timestamps) === length(close) "length(timestamps) ≠ length(close)"
 
-    return map(timestamps, open, high, low, close) do t, o, h, l, c
-        return LWCCandleChartItem(t, o, h, l, c)
-    end
+    return TimeArray(map(timestamps, open, high, low, close) do t, o, h, l, c
+        return TimeTick(datetime2epochns(t), LWCCandleChartItem(o, h, l, c))
+    end)
 end
 
 end

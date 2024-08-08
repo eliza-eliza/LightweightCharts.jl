@@ -46,7 +46,7 @@ Wrapper function for [`Candlestick`](https://tradingview.github.io/lightweight-c
 | `plugins::Vector{LWCPlugin}` | `LWCPlugin[]` | Additional plugins. |
 """
 function lwc_candlestick(
-    data::AbstractVector{LWCCandleChartItem};
+    data::TimeArray{Int64,LWCCandleChartItem};
     price_scale_id::LWC_PRICE_SCALE_ID = LWC_LEFT,
     label_name::String = "",
     visible::Bool = true,

@@ -24,6 +24,7 @@ export LWC_RIGHT,
 
 using Serde
 using Dates
+using TimeArrays
 
 using ..LightweightCharts
 import ..randcolor

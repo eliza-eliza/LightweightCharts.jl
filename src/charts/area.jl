@@ -54,7 +54,7 @@ Wrapper function for [`Area`](https://tradingview.github.io/lightweight-charts/d
 | `plugins::Vector{LWCPlugin}` | `LWCPlugin[]` | Additional plugins. |
 """
 function lwc_area(
-    data::AbstractVector{LWCSimpleChartItem};
+    data::TimeArray{Int64,LWCSimpleChartItem};
     price_scale_id::LWC_PRICE_SCALE_ID = LWC_LEFT,
     label_name::String = "",
     visible::Bool = true,

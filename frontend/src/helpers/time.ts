@@ -5,10 +5,15 @@ export function fixDateShift(
 ): { date: Date; nsRem: number } {
     if (dateShift > 0) {
         const trueValue: number = time;
+        // let date: Date = new Date((trueValue / dateScale) + dateShift * 1000);
         let date: Date = new Date(dateShift + trueValue / dateScale);
-        const nsRem: number =
-            (trueValue * (1_000_000 / dateScale)) % 1_000_000_000;
-        return { date, nsRem };
+
+        let nsRem: number = trueValue * (1_000_000 / dateScale);
+        let nanosec = Number(
+            (BigInt(nsRem) + BigInt(dateShift) * 1000_000n) % 1000_000_000n
+        );
+
+        return { date, nsRem: nanosec };
     } else {
         return { date: new Date(time), nsRem: (time % 1000) * 1_000_000 };
     }
