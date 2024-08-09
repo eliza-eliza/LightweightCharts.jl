@@ -4,7 +4,6 @@ import { lcm } from '../helpers/utils.ts';
 
 const ChartLayout = ({ layout }) => {
     const [panels, setPanels] = useState([]);
-    const [crosshairPosition, setCrosshairPosition] = useState(null);
 
     const grid = useMemo(() => {
         const initPanels = Object.values(layout.panels);
@@ -86,9 +85,6 @@ const ChartLayout = ({ layout }) => {
                         settings={layout.panels[panel]}
                         setPanels={setPanels}
                         id={panel}
-                        syncCrosshair={layout.syncCrosshair}
-                        crosshairPosition={crosshairPosition}
-                        handleCrosshairMove={setCrosshairPosition}
                     />
                 );
             })}

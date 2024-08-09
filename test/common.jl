@@ -21,8 +21,25 @@ end
 end
 
 @testset "Data serialization" begin
-    data = LWCSimpleChartItem(17500000, 0.29)
-    result = "{\"time\":\"17500000\",\"value\":0.29}"
+    struct TestChart <: AbstractChartSettings
+        data::LWCChartData
+    end
+    data =  TestChart(
+        LWCChartData(TimeArray([
+            TimeTick(1680086570373000000, LWCSimpleChartItem(1.0)),
+            TimeTick(1680086571373000000, LWCSimpleChartItem(5.0)),
+        ]))
+    )
+    result = "{\"data\":[[\"1680086570373000000\",{\"value\":1.0}],[\"1680086571373000000\",{\"value\":5.0}]]}"
+    @test Serde.to_json(data) == result
+
+    data =  TestChart(
+        LWCChartData(TimeArray([
+            TimeTick(1680086570373000000, LWCSimpleChartItem(NaN)),
+            TimeTick(1680086571373000000, LWCSimpleChartItem(NaN)),
+        ]))
+    )
+    result = "{\"data\":[[\"1680086570373000000\",{}],[\"1680086571373000000\",{}]]}"
     @test Serde.to_json(data) == result
 end
 

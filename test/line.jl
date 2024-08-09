@@ -1,8 +1,8 @@
 # test/line
 
-@testset "LWCSimpleChartItem(::Int64, ::Real)" begin
-    @test LWCSimpleChartItem(1680086570373_000000, 1.0) ==
-          LWCSimpleChartItem(1680086570373_000000, 1.0)
+@testset "LWCSimpleChartItem(::Real)" begin
+    @test LWCSimpleChartItem(1.0) ==
+          LWCSimpleChartItem(1.0)
 end
 
 @testset "Line" begin
@@ -63,13 +63,13 @@ end
             "",
             2.0,
         ),
-        data = LWCChartData([
-            LWCSimpleChartItem(1680086570373_000000, 1.0),
-            LWCSimpleChartItem(1680086571373_000000, 5.0),
-            LWCSimpleChartItem(1680086572373_000000, 2.0),
-            LWCSimpleChartItem(1680086573373_000000, 3.0),
-            LWCSimpleChartItem(1680086574373_000000, 4.0),
-        ]),
+        data = LWCChartData(TimeArray([
+            TimeTick(1680086570373_000000, LWCSimpleChartItem(1.0)),
+            TimeTick(1680086571373_000000, LWCSimpleChartItem(5.0)),
+            TimeTick(1680086572373_000000, LWCSimpleChartItem(2.0)),
+            TimeTick(1680086573373_000000, LWCSimpleChartItem(3.0)),
+            TimeTick(1680086574373_000000, LWCSimpleChartItem(4.0)),
+        ])),
         plugins = Vector{LWCPlugin}([
             LWCPlugin(
                 "addVertLine",
@@ -146,13 +146,13 @@ end
             "",
             2.0,
         ),
-        data = LWCChartData([
-            LWCSimpleChartItem(1680086570373_000000, 1.0),
-            LWCSimpleChartItem(1680086571373_000000, 5.0),
-            LWCSimpleChartItem(1680086572373_000000, 2.0),
-            LWCSimpleChartItem(1680086573373_000000, 3.0),
-            LWCSimpleChartItem(1680086574373_000000, 4.0),
-        ]),
+        data = LWCChartData(TimeArray([
+            TimeTick(1680086570373_000000, LWCSimpleChartItem(1.0)),
+            TimeTick(1680086571373_000000, LWCSimpleChartItem(5.0)),
+            TimeTick(1680086572373_000000, LWCSimpleChartItem(2.0)),
+            TimeTick(1680086573373_000000, LWCSimpleChartItem(3.0)),
+            TimeTick(1680086574373_000000, LWCSimpleChartItem(4.0)),
+        ])),
         plugins = Vector{LWCPlugin}([
             LWCPlugin(
                 "addVertLine",

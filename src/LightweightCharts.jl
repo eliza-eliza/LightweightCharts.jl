@@ -18,8 +18,7 @@ export lwc_vert_line,
     lwc_crosshair_highlight_bar,
     lwc_tooltip
 
-export lwc_time,
-    lwc_value,
+export lwc_value,
     lwc_open,
     lwc_high,
     lwc_close,
@@ -110,6 +109,10 @@ function Base.show(io::IO, m::MIME"text/html", x::LWCChart)
     return write(io, string(x))
 end
 
+function Serde.SerJson.ser_value(::Type{<:AbstractChartSettings}, ::Val{:data}, v::LWCChartData)
+    return map(x -> [string(x.timestamp), x.value], v)
+end
+
 include("charts.jl")
 using .Charts
 
@@ -151,11 +154,11 @@ function Base.show(io::IO, m::MIME"text/html", x::LWCPanel)
     return write(io, string(x))
 end
 
-function union_grid(charts)
+function union_grid(charts::Tuple{Vararg{LWCChart}})
     time_arrays = map(chart -> TimeArray{Int64,Real}(0 * chart.data.data), charts)
-    common_array = reduce(+, time_arrays)
+    union_timestamp = reduce(+, time_arrays)
     for chart in charts
-        chart.data.data = common_array + chart.data.data
+        chart.data.data = union_timestamp + chart.data.data
     end
 end
 
@@ -235,7 +238,6 @@ See also: [`lwc_layout`](@ref).
 mutable struct LWCLayout <: AbstractChartSettings
     name::String
     sync::Bool
-    sync_crosshair::Bool
     min_height::Integer
     panels::Dict{String,LWCPanel}
 end
@@ -273,14 +275,12 @@ Combines multiple `panels` into a common layout.
 |:-----------|:-----------------------|:------------|
 | `name::String` | `"LightweightCharts ❤️ Julia"` | Layout name (will be displayed in the browser tab title). |
 | `sync::Bool` | `true` | Synchronization of chart scrolling. |
-| `sync_crosshair::Bool` | `true` | Synchronization the crosshairs of separate charts. |
 | `min_height::Integer` | `300` | Minimum of layout height in px. |
 """
 function lwc_layout(
     panels::LWCPanel...;
     name::String = "LightweightCharts ❤️ Julia",
     sync::Bool = true,
-    sync_crosshair::Bool = true,
     min_height::Integer = 300,
 )
     update_not_set_coords!(panels)
@@ -315,7 +315,7 @@ function lwc_layout(
         end
     end
 
-    return LWCLayout(name, sync, sync_crosshair, min_height, grids)
+    return LWCLayout(name, sync, min_height, grids)
 end
 
 function Base.string(chart::LWCChart)

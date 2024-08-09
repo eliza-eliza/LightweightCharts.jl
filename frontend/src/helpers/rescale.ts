@@ -25,7 +25,7 @@ function rescaleAndShiftDates(settings) {
     let min_resolution = Infinity;
     for (let data of settings.charts) {
         for (let entry of data.data) {
-            min_resolution = Math.min(min_resolution, tensPower(entry.timestamp));
+            min_resolution = Math.min(min_resolution, tensPower(entry[0]));
         }
     }
     let date_shift, date_scale;
@@ -33,18 +33,21 @@ function rescaleAndShiftDates(settings) {
         date_shift = 0;
         date_scale = 1;
         settings.charts.forEach((data) => {
-            data.data.forEach((entry) => {
-                entry.time = Number(BigInt(entry.timestamp) / 1000000n);
+            data.data = data.data.map((entry) => {
+                return { 
+                    time: Number(BigInt(entry[0]) / 1000000n), 
+                    ...entry[1],
+                };
             });
         });
     } else {
         let min_datetime = BigInt(
-            Math.min(...settings.charts.map((data) => data.data[0].timestamp))
+            Math.min(...settings.charts.map((data) => data.data[0][0]))
         );
         let max_datetime = BigInt(
             Math.max(
                 ...settings.charts.map(
-                    (data) => data.data[data.data.length - 1].timestamp
+                    (data) => data.data[data.data.length - 1][0]
                 )
             )
         );
@@ -62,9 +65,9 @@ function rescaleAndShiftDates(settings) {
             data.data = data.data.map((entry) => {
                 return { 
                     time: Number(
-                        (BigInt(entry.timestamp) - date_shift_ns) / BigInt(div_by)
+                        (BigInt(entry[0]) - date_shift_ns) / BigInt(div_by)
                     ), 
-                    ...entry.value,
+                    ...entry[1],
                 };
             });
         });

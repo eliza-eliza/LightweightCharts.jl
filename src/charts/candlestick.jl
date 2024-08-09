@@ -19,7 +19,7 @@ struct CandlestickChartSettings <: AbstractChartSettings
 end
 
 """
-    lwc_candlestick(data::Vector{LWCCandleChartItem}; kw...) -> LWCChart
+    lwc_candlestick(data::TimeArray{Int64,LWCCandleChartItem}; kw...) -> LWCChart
 
 Creates a [`LWCChart`](@ref) object that contains candlesticks chart information.
 A general method that allows you to customize each chart node using [`LWCCandleChartItem`](@ref).

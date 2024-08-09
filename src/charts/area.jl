@@ -23,7 +23,7 @@ struct AreaChartSettings <: AbstractChartSettings
 end
 
 """
-    lwc_area(Vector{LWCSimpleChartItem}; kw...) -> LWCChart
+    lwc_area(TimeArray{Int64,LWCSimpleChartItem}; kw...) -> LWCChart
 
 Creates a [`LWCChart`](@ref) object that contains line chart information.
 A general method that allows you to customize each chart node using [`LWCSimpleChartItem`](@ref).

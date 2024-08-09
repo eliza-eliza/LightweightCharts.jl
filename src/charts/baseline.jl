@@ -32,7 +32,7 @@ struct BaseLineChartSettings <: AbstractChartSettings
 end
 
 """
-    lwc_baseline(Vector{LWCSimpleChartItem}; kw...) -> LWCChart
+    lwc_baseline(TimeArray{Int64,LWCSimpleChartItem}; kw...) -> LWCChart
 
 Creates a [`LWCChart`](@ref) object that contains line chart information.
 A general method that allows you to customize each chart node using [`LWCSimpleChartItem`](@ref).

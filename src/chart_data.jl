@@ -1,7 +1,6 @@
 module ChartData
 
-export lwc_time,
-    lwc_value,
+export lwc_value,
     lwc_open,
     lwc_high,
     lwc_close,
@@ -22,14 +21,12 @@ using TimeArrays
 using ..LightweightCharts
 
 """
-    LWCSimpleChartItem(time::Int64, value::Real; kw...)
-    LWCSimpleChartItem(time::TimeType, value::Real; kw...)
+    LWCSimpleChartItem(value::Real; kw...)
 
 This data type allows you to customize the colors for each point of your chart.
 Supported for [`lwc_line`](@ref), [`lwc_area`](@ref), [`lwc_baseline`](@ref) and [`lwc_histogram`](@ref) methods.
 
 ## Fields
-- `time::Int64`: Data unix time.
 - `value::Float64`: Data value.
 
 ## Keyword arguments
@@ -100,14 +97,8 @@ lwc_bottom_fill_color_2(x::LWCSimpleChartItem) = x.bottom_fill_color_2
 lwc_bottom_line_color(x::LWCSimpleChartItem) = x.bottom_line_color
 lwc_color(x::LWCSimpleChartItem) = x.color
 
-Serde.SerJson.ser_value(::Type{<:AbstractChartItem}, ::Val{:time}, x::Int64) = string(x)
-
 function Base.:(==)(left::LWCSimpleChartItem, right::LWCSimpleChartItem)
     return isequal(lwc_value(left), lwc_value(right))
-end
-
-function Base.zero(::Type{LWCSimpleChartItem})
-    return LWCSimpleChartItem(0)
 end
 
 function Base.:(*)(left::Real, right::LWCSimpleChartItem)
@@ -115,6 +106,8 @@ function Base.:(*)(left::Real, right::LWCSimpleChartItem)
 end
 
 function Base.:(+)(left::Real, right::LWCSimpleChartItem)
+    isnan(left) && return right
+
     return LWCSimpleChartItem(
         left + right.value;
         right.line_color,
@@ -130,18 +123,16 @@ function Base.:(+)(left::Real, right::LWCSimpleChartItem)
     )
 end
 
+Base.zero(::Type{LWCSimpleChartItem}) = LWCSimpleChartItem(0)
 Base.isnan(x::LWCSimpleChartItem) = isnan(x.value)
-
 TimeArrays.ta_nan(::Type{LWCSimpleChartItem}) = LWCSimpleChartItem(NaN)
 
 """
-    LWCCandleChartItem(time::Int64, open::Real, high::Real, low::Real, close::Real; kw...)
-    LWCCandleChartItem(time::TimeType, open::Real, high::Real, low::Real, close::Real; kw...)
+    LWCCandleChartItem(open::Real, high::Real, low::Real, close::Real; kw...)
 
 Representation of candlestick data for [`lwc_candlestick`](@ref) and [`lwc_bar`](@ref) methods.
 
 ## Fields
-- `time::Int64`
 - `open::Float64`
 - `high::Float64`
 - `low::Float64`
@@ -201,15 +192,13 @@ function Base.:(==)(left::LWCCandleChartItem, right::LWCCandleChartItem)
     )
 end
 
-function Base.zero(::Type{LWCCandleChartItem})
-    return LWCCandleChartItem(0, 0, 0, 0)
-end
-
 function Base.:(*)(left::Real, right::LWCCandleChartItem)
     return left * right.close
 end
 
 function Base.:(+)(left::Real, right::LWCCandleChartItem)
+    isnan(left) && return right
+
     return LWCCandleChartItem(
         left + right.open, 
         left + right.high, 
@@ -221,8 +210,8 @@ function Base.:(+)(left::Real, right::LWCCandleChartItem)
     )
 end
 
+Base.zero(::Type{LWCCandleChartItem}) = LWCCandleChartItem(0, 0, 0, 0)
 Base.isnan(x::LWCCandleChartItem) = isnan(x.open) && isnan(x.high) && isnan(x.low) && isnan(x.close)
-
 TimeArrays.ta_nan(::Type{LWCCandleChartItem}) = LWCCandleChartItem(NaN, NaN, NaN, NaN)
 
 const UNIXEPOCH_NS = Dates.UNIXEPOCH * Int128(1_000_000)

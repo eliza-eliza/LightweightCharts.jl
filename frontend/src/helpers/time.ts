@@ -5,9 +5,7 @@ export function fixDateShift(
 ): { date: Date; nsRem: number } {
     if (dateShift > 0) {
         const trueValue: number = time;
-        // let date: Date = new Date((trueValue / dateScale) + dateShift * 1000);
         let date: Date = new Date(dateShift + trueValue / dateScale);
-
         let nsRem: number = trueValue * (1_000_000 / dateScale);
         let nanosec = Number(
             (BigInt(nsRem) + BigInt(dateShift) * 1000_000n) % 1000_000_000n

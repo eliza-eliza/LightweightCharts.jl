@@ -13,7 +13,7 @@ struct BarChartSettings <: AbstractChartSettings
 end
 
 """
-    lwc_bar(data::Vector{LWCCandleChartItem}; kw...) -> LWCChart
+    lwc_bar(data::TimeArray{Int64,LWCCandleChartItem}; kw...) -> LWCChart
 
 Creates a [`LWCChart`](@ref) object that contains bar chart information.
 A general method that allows you to customize each chart node using [`LWCCandleChartItem`](@ref).

@@ -21,7 +21,7 @@ struct LineChartSettings <: AbstractChartSettings
 end
 
 """
-    lwc_line(Vector{LWCSimpleChartItem}; kw...) -> LWCChart
+    lwc_line(TimeArray{Int64,LWCSimpleChartItem}; kw...) -> LWCChart
 
 Creates a [`LWCChart`](@ref) object that contains line chart information.
 A general method that allows you to customize each chart node using [`LWCSimpleChartItem`](@ref).

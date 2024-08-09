@@ -12,7 +12,7 @@ import { DateTimeString, DateString, TimeString } from '../helpers/time.ts';
 import { rescaleAndShiftDates } from '../helpers/rescale.ts';
 import Copyright from './copyright.jsx';
 
-const ChartPanel = ({ settings, id, setPanels, syncCrosshair, crosshairPosition, handleCrosshairMove }) => {
+const ChartPanel = ({ settings, id, setPanels }) => {
     const panelId = `${settings.x}${settings.y}`;
     const ref = useRef(null);
     const tooltip = useRef(null);
@@ -27,26 +27,6 @@ const ChartPanel = ({ settings, id, setPanels, syncCrosshair, crosshairPosition,
         }
         createPanel();
     }, []);
-
-    useEffect(() => {
-        if (!crosshairPosition || crosshairPosition.id === id) {
-            return;
-        }
-
-        let isCrossHair = false;
-        if (charts) {
-            for (const value of Object.values(charts)) {
-                if (panel.timeScale().timeToCoordinate(crosshairPosition.time)) {
-                    isCrossHair = true;
-                }
-                panel.setCrosshairPosition(null, crosshairPosition.time, value);
-            }
-        }
-
-        if (!isCrossHair && crosshairPosition.id !== id) {
-            panel.clearCrosshairPosition();
-        }
-    }, [crosshairPosition, syncCrosshair]);
 
     const debounce = (func, delay) => {
         let timeoutId;
@@ -123,7 +103,6 @@ const ChartPanel = ({ settings, id, setPanels, syncCrosshair, crosshairPosition,
 
         settings.tooltip && newChart.subscribeCrosshairMove(debounce((param) => {
             if (!param || !param.point || !param.time) return;
-            syncCrosshair && handleCrosshairMove({ time: param.time, point: param.point, id: id });
 
             const tooltipRef = tooltip.current;
             if (!param || !param.seriesData) {

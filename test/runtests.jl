@@ -3,6 +3,7 @@
 using Test
 using Dates
 using NanoDates
+using TimeArrays
 using LightweightCharts
 
 function Base.:(==)(l::T, r::T) where {T<:Union{LWCChart,LWCPanel}}

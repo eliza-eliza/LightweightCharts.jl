@@ -47,13 +47,13 @@
             true,
             false,
         ),
-        data = LWCChartData([
-            LWCCandleChartItem(1680086570373_000000, 1, 1, 1, 1),
-            LWCCandleChartItem(1680086571373_000000, 5, 5, 5, 5),
-            LWCCandleChartItem(1680086572373_000000, 2, 2, 2, 2),
-            LWCCandleChartItem(1680086573373_000000, 3, 3, 3, 3),
-            LWCCandleChartItem(1680086574373_000000, 4, 4, 4, 4),
-        ]),
+        data = LWCChartData(TimeArray([
+            TimeTick(1680086570373_000000, LWCCandleChartItem(1, 1, 1, 1)),
+            TimeTick(1680086571373_000000, LWCCandleChartItem(5, 5, 5, 5)),
+            TimeTick(1680086572373_000000, LWCCandleChartItem(2, 2, 2, 2)),
+            TimeTick(1680086573373_000000, LWCCandleChartItem(3, 3, 3, 3)),
+            TimeTick(1680086574373_000000, LWCCandleChartItem(4, 4, 4, 4)),
+        ])),
         plugins = Vector{LWCPlugin}([
             LWCPlugin(
                 "addTrendLine",
@@ -116,13 +116,13 @@ end
             true,
             false,
         ),
-        data = LWCChartData([
-            LWCCandleChartItem(1680086570373_000000, 1, 1, 1, 1),
-            LWCCandleChartItem(1680086571373_000000, 5, 5, 5, 5),
-            LWCCandleChartItem(1680086572373_000000, 2, 2, 2, 2),
-            LWCCandleChartItem(1680086573373_000000, 3, 3, 3, 3),
-            LWCCandleChartItem(1680086574373_000000, 4, 4, 4, 4),
-        ]),
+        data = LWCChartData(TimeArray([
+            TimeTick(1680086570373_000000, LWCCandleChartItem(1, 1, 1, 1)),
+            TimeTick(1680086571373_000000, LWCCandleChartItem(5, 5, 5, 5)),
+            TimeTick(1680086572373_000000, LWCCandleChartItem(2, 2, 2, 2)),
+            TimeTick(1680086573373_000000, LWCCandleChartItem(3, 3, 3, 3)),
+            TimeTick(1680086574373_000000, LWCCandleChartItem(4, 4, 4, 4)),
+        ])),
         plugins = Vector{LWCPlugin}([
             LWCPlugin(
                 "addTrendLine",
